@@ -14,4 +14,13 @@ npx playwright codegen --channel chrome --user-data-dir="C:/temp/chrome-debug"
 ```
 "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --remote-debugging-port=9222 --user-data-dir=C:/temp/chrome-debug
 ```
+
+
+执行以下代码
 ```
+npx tsx aliyun.test.ts
+```
+```
+
+
+

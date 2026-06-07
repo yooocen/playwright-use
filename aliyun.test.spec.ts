@@ -16,25 +16,25 @@ async function scrollUntilVisible(page: any, item: any) {
   const browser = await chromium.connectOverCDP('http://localhost:9222');
   const context = browser.contexts()[0];
 
-  // 当前页面就是控制台首页
-  const page = context.pages()[0];
+  // 1. 找控制台首页，没有则导航过去
+  let page = context.pages().find(p => p.url().includes('home.console'));
+  if (!page) {
+    page = await context.newPage();
+    await page.goto('https://home.console.aliyun.com/home/dashboard/ProductAndService');
+    await page.waitForTimeout(3000);
+  }
 
-  // 1. 搜索 ecs → 点击云服务器 ECS
+  // 2. 搜索 ecs → 进入 ECS 页面
   await page.locator('input[placeholder*="搜索"]').fill('ecs');
   await page.waitForTimeout(1500);
   await page.getByText('云服务器 ECS').first().evaluate(el => (el as HTMLElement).click());
-  await page.waitForTimeout(3000);
-  // 关闭搜索面板，避免遮挡后续点击
-  await page.waitForTimeout(1000);
-  // 关闭搜索面板
+  await page.waitForTimeout(5000);
   await page.evaluate(() => {
     const panel = document.querySelector('[data-spm="console-base_search-panel"]');
     if (panel) (panel as HTMLElement).style.display = 'none';
   });
-  await page.waitForTimeout(500);
+  const ecsPage = context.pages().find(p => p.url().includes('ecs.console')) || page;
 
-  // 2. 找到 ECS 页面 → 点击资源报表
-  let ecsPage = context.pages().find(p => p.url().includes('ecs.console')) || page;
   await ecsPage.getByRole('tab', { name: '资源报表' }).evaluate(el => (el as HTMLElement).click());
   await ecsPage.waitForTimeout(1000);
 
